@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../plantillas/general.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <h:form id="frmClientes">
+            <p:panel id="pnlClientes">
+                <p:dataTable id="tbClientes" var="cli" value="#{clientebeans.lista}"
+                             selectionMode="single"
+                             selection="#{clientebeans.selectedCliente}"
+                             rowKey="#{cli.id_cliente}">
+                    <p:column headerText="Id">
+                        <h:outputText value="#{cli.id_cliente}" />
+                    </p:column>
+
+                    <p:column headerText="Year">
+                        <h:outputText value="#{cli.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Brand">
+                        <h:outputText value="#{cli.direccion}" />
+                    </p:column>
+
+                    <p:column headerText="Color">
+                        <h:outputText value="#{cli.ruc}" />
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton id="btnNuevo" value="Nuevo" oncomplete="PF('wdlgNuevo').show();" />
+                        <p:commandButton id="btnModificar" value="Modificar" oncomplete="PF('wdlgModificar').show();" update=":frmModificarCliente" />
+                        <p:commandButton id="btnEliminar" value="Eliminar" oncomplete="PF('wdlgEliminar').show();" update=":frmEliminarCliente"/>
+                    </f:facet>
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+        <p:dialog 
+            id="dlgAgregar" 
+            header="Nuevo Cliente"
+            widgetVar="wdlgNuevo" 
+            modal="true"
+            resizable="false" 
+            showEffect="clip"
+            hideEffect="fold">
+            <h:form id="frmNuevoCliente">
+                <p:panelGrid 
+                    id="pngNuevoCliente" 
+                    columns="2">
+                    <h:outputText value="Código" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere un codigo"
+                        value="#{clientebeans.newCliente.id_cliente}" />
+                    <h:outputText value="Ruc" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.newCliente.ruc}" />   
+                    <h:outputText value="Nombre" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.newCliente.nombre}" /> 
+                    <h:outputText value="Direccion" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.newCliente.direccion}" /> 
+                </p:panelGrid>
+                <p:commandButton 
+                    value="Ingresar"
+                    action="#{clientebeans.insertar()}"
+                    update=":frmClientes:pnlClientes :frmNuevoCliente" 
+                    onclick="wdlgNuevo.hide();"/>                
+                <p:commandButton 
+                    value="Cancelar"
+                    immediate="true"
+                    oncomplete="PF('wdlgNuevo').hide();"
+                    type="reset"/>
+            </h:form>
+        </p:dialog>    
+        <p:dialog 
+            id="dlgModificar" 
+            header="Modificar Cliente"
+            widgetVar="wdlgModificar" 
+            modal="true"
+            resizable="false" 
+            showEffect="clip"
+            hideEffect="fold">
+            <h:form id="frmModificarCliente">
+                <p:panelGrid id="pngModificarCliente" columns="2">
+                    <h:outputText value="Código" />
+                    <p:inputText 
+                        required="true" 
+                        readonly="true"
+                        value="#{clientebeans.selectedCliente.id_cliente}" />
+                    <h:outputText 
+                        value="Ruc" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.selectedCliente.ruc}" />      
+                      <h:outputText 
+                        value="Nombre" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.selectedCliente.nombre}" />  
+                      <h:outputText 
+                        value="Direccion" />
+                    <p:inputText 
+                        required="true"
+                        requiredMessage="Se requiere una descripción"
+                        value="#{clientebeans.selectedCliente.direccion}" />  
+                </p:panelGrid>
+                <p:commandButton 
+                    value="Modificar"
+                    action="#{clientebeans.actualizar()}"
+                    update=":frmClientes:pnlClientes frmModificarCliente"
+                    onclick="wdlgModificar.hide()"/>
+                <p:commandButton 
+                    value="Cancelar" 
+                    onclick="wdlgModificar.hide()"
+                    type="reset" />
+            </h:form>
+        </p:dialog>
+        <p:dialog 
+            id="dlgEliminar" 
+            header="Eliminar Cliente"
+            widgetVar="wdlgEliminar" 
+            modal="true"
+            resizable="false" 
+            showEffect="clip"
+            hideEffect="fold">
+            <h:form id="frmEliminarCliente">
+                <p:panelGrid id="pngEliminarClienter" columns="2">
+                    <h:outputText value="Código" />
+                    <h:outputText value="#{clientebeans.selectedCliente.id_cliente}" />
+                    <h:outputText value="Descripción" />
+                    <h:outputText value="#{clientebeans.selectedCliente.nombre}" />                                     
+                </p:panelGrid>
+                <p:commandButton 
+                    value="Eliminar"
+                    action="#{clientebeans.eliminar()}"
+                    update=":frmClientes:pnlClientes :frmEliminarCliente" 
+                    onclick="wdlgEliminar.hide()"/>
+                <p:commandButton 
+                    value="Cancelar" 
+                    onclick="wdlgEliminar.hide()"
+                    type="reset" />
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

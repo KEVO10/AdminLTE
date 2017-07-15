@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/admin.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"> 
+
+    <ui:define name="head">
+        <title>MAVEN PAGINA PRINCIPAL</title>
+    </ui:define>
+
+    <ui:define name="logo-lg">
+       FACTURACION
+    </ui:define>
+
+    <ui:define name="logo-mini">
+        Admin
+    </ui:define>
+
+    <ui:define name="menu">
+        <ul class="sidebar-menu">
+            <li>
+                <p:link href="/prueba1.xhtml" onclick="clearBreadCrumbs()">
+                    <i class="fa fa-home"></i>
+                    <span>INICIO</span>
+                </p:link>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="top-menu">
+        <ui:include src="/includes/top-bar.xhtml"/>
+    </ui:define>
+
+    <ui:define name="title">
+        <h2 class="align-center">
+            FACTURACION <span class="text-aqua"> <i></i></span> 
+            <br/>
+            <h:form id="frmFactura">
+                <p:panel id="pnlFactura">
+                    <p:dataTable id="tbFactura" var="fac"  value="#{facturabeans.lista}"
+                                 selectionMode="single"
+                                 selection="#{facturabeans.selectedFactura}"
+                                 rowKey="#{fac.numero_factura}">
+                        <p:column headerText="Id"
+                                  style="with:10">
+                            <h:outputText value="#{fac.numero_factura}" />
+                        </p:column>
+                        <p:column headerText="Cliente id"
+                                  style="with:20">
+                            <h:outputText value="#{fac.cliente.id_cliente}" />
+                        </p:column>
+
+                        <p:column headerText="fecha"
+                                  style="with:60">
+                            <h:outputText value="#{fac.fecha}" />
+
+                        </p:column>
+
+                        <p:column headerText="iva"
+                                  style="with:80">
+                            <h:outputText value="#{fac.iva}" />
+                        </p:column>
+
+                        <p:column headerText="subtotal"
+                                  style="with:80">
+                            <h:outputText value="#{fac.subtotal}" />
+                        </p:column>
+
+                        <p:column headerText="total"
+                                  style="with:80">
+                            <h:outputText value="#{fac.total}" />
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton id="btnNuevo" value="Nuevo" oncomplete="PF('wdlgNuevo').show();" />
+                            <p:commandButton id="btnModificar" value="Modificar" oncomplete="PF('wdlgModificar').show();" update=":frmModificarFactura" />
+                            <p:commandButton id="btnEliminar" value="Eliminar" oncomplete="PF('wdlgEliminar').show();" update=":frmEliminarFactura"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+            <p:dialog 
+                id="dlgAgregar" 
+                header="Nuevo Factura"
+                widgetVar="wdlgNuevo" 
+                modal="true"
+                resizable="false" 
+                showEffect="clip"
+                hideEffect="fold">
+                <h:form id="frmNuevoFactura">
+                    <p:panelGrid 
+                        id="pngNuevoFactura" 
+                        columns="2">
+                        <h:outputText value="Código" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere un codigo"
+                            value="#{facturabeans.newFactura.numero_factura}" />
+                        <h:outputText value="Cliente id" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.cliente.id_cliente}" />   
+                        <h:outputText value="Fecha" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.fecha}" /> 
+                        <p:outputLabel for="event" value="Fecha:" />
+                        <p:calendar id="event" value="#{calendarView.date4}">
+                            <p:ajax event="dateSelect" listener="#{calendarView.onDateSelect}" update=":frmFactura:pnlFactura :frmNuevoFactura"  />
+                        </p:calendar>
+                        <h:outputText value="Sub total" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.subtotal}" /> 
+                        <h:outputText value="Iva" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.iva}" /> 
+                        <h:outputText value="Total" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.total}" /> 
+                    </p:panelGrid>
+                    <p:commandButton 
+                        value="Ingresar"
+                        action="#{facturabeans.insertar()}"
+                        update=":frmFactura:pnlFactura :frmNuevoFactura" 
+                        onclick="wdlgNuevo.hide();"/>                
+                    <p:commandButton 
+                        value="Cancelar"
+                        immediate="true"
+                        oncomplete="PF('wdlgNuevo').hide();"
+                        type="reset"/>
+                </h:form>
+            </p:dialog>  
+            <p:dialog 
+                id="dlgModificar" 
+                header="Modificar Factura"
+                widgetVar="wdlgModificar" 
+                modal="true"
+                resizable="false" 
+                showEffect="clip"
+                hideEffect="fold">
+                <h:form id="frmModificarFactura">
+                    <p:panelGrid 
+                        id="pngModificarFactura" 
+                        columns="2">
+                        <h:outputText value="Código" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere un codigo"
+                            value="#{facturabeans.newFactura.numero_factura}" />
+                        <h:outputText value="Cliente id" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.cliente.id_cliente}" />   
+                        <h:outputText value="Fecha" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.fecha}" /> 
+                        <h:outputText value="Sub total" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.subtotal}" /> 
+                        <h:outputText value="Iva" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.iva}" /> 
+                        <h:outputText value="Total" />
+                        <p:inputText 
+                            required="true"
+                            requiredMessage="Se requiere una descripción"
+                            value="#{facturabeans.newFactura.total}" /> 
+                    </p:panelGrid>
+                    <p:commandButton 
+                        value="Ingresar"
+                        action="#{facturabeans.actualizar()}"
+                        update=":frmFactura:pnlFactura frmModificarFactura" 
+                        onclick="wdlgNuevo.hide();"/>                
+                    <p:commandButton 
+                        value="Cancelar"
+                        immediate="true"
+                        oncomplete="PF('wdlgNuevo').hide();"
+                        type="reset"/>
+                </h:form>
+            </p:dialog>  
+            <p:dialog 
+                id="dlgEliminar" 
+                header="Eliminar Factura"
+                widgetVar="wdlgEliminar" 
+                modal="true"
+                resizable="false" 
+                showEffect="clip"
+                hideEffect="fold">
+                <h:form id="frmEliminarFactura">
+                    <p:panelGrid id="pngEliminarFactura" columns="2">
+                        <h:outputText value="Código" />
+                        <h:outputText value="#{facturabeans.selectedFactura.numero_factura}" />
+                        <h:outputText value="Descripción" />
+                        <h:outputText value="#{facturabeans.selectedFactura.fecha}" />                                     
+                    </p:panelGrid>
+                    <p:commandButton 
+                        value="Eliminar"
+                        action="#{facturabeans.eliminar()}"
+                        update=":frmFactura:pnlFactura :frmEliminarFactura" 
+                        onclick="wdlgEliminar.hide()"/>
+                    <p:commandButton 
+                        value="Cancelar" 
+                        onclick="wdlgEliminar.hide()"
+                        type="reset" />
+                </h:form>
+            </p:dialog>
+        </h2>
+    </ui:define>
+
+    <ui:define name="description">
+      
+    </ui:define>
+
+    <ui:define name="body">
+        <h2>Page body</h2>
+    </ui:define>
+
+
+    <ui:define name="footer">
+        <a target="_blank"
+           href="https://github.com/adminfaces/">
+            Copyright (C) 2017 - AdminFaces
+        </a>
+
+        <div class="pull-right hidden-xs" style="color: gray">
+            <i>1.0.0</i>
+        </div>
+    </ui:define>
+
+
+</ui:composition>
+
